@@ -34,11 +34,10 @@ if __name__ == '__main__':
     t_region_num, t_graph_info = load_data(t_dataset)
 
     model = UARE(s_region_num=s_region_num, t_region_num=t_region_num, s_graph_info=s_graph_info,
-                 t_graph_info=t_graph_info, s_hier_ranks=None, t_hier_ranks=None,
-                 hidden_dim=d_feature, gnn_layers=3, num_heads=8)
+                 t_graph_info=t_graph_info, hidden_dim=d_feature, gat_layers=2, num_heads=8)
 
     evaluator = Evaluator(exp_id=exp_id)
-    optim = torch.optim.Adam(model.parameters())
+    optim = torch.optim.Adam(model.parameters(), lr=1e-3)
 
     results = []
     min_loss = float('inf')
@@ -60,7 +59,7 @@ if __name__ == '__main__':
         all_loss.backward()
         optim.step()
 
-        if (epoch_id + 1) % 10 == 0 or epoch_id == 0:
+        if (epoch_id + 1) % 50 == 0 or epoch_id == 0:
             best_epoch = epoch_id + 1
 
             s_emb, t_emb = model.get_region_emb()

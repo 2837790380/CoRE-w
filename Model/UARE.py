@@ -10,7 +10,7 @@ import sys
 
 class UARE(nn.Module):
     def __init__(self, s_region_num, t_region_num, s_graph_info, t_graph_info,
-                 s_hier_ranks, t_hier_ranks, hidden_dim, gnn_layers=2, num_heads=8):
+                 hidden_dim, gat_layers=2, num_heads=8):
         super().__init__()
 
         self.s_region_emb = nn.Embedding(s_region_num, hidden_dim)
@@ -20,14 +20,11 @@ class UARE(nn.Module):
         self.t_edge_index, self.t_edge_weight, self.t_mob = t_graph_info['edge_index'], t_graph_info['edge_weight'], \
                                                             t_graph_info['mob']
 
-        self.gnn_layers = gnn_layers
-        self.s_hier_ranks = s_hier_ranks
-        self.t_hier_ranks = t_hier_ranks
-
-        self.gnn_convs_s = nn.ModuleList([GATConv(in_channels=hidden_dim, out_channels=hidden_dim, heads=8, concat=False, edge_dim=1)
-                                          for _ in range(self.gnn_layers)])
-        self.gnn_convs_t = nn.ModuleList([GATConv(in_channels=hidden_dim, out_channels=hidden_dim, heads=8, concat=False, edge_dim=1)
-                                          for _ in range(self.gnn_layers)])
+        self.gat_layers = gat_layers
+        self.gat_s = nn.ModuleList([GATConv(in_channels=hidden_dim, out_channels=hidden_dim, heads=8, concat=False, edge_dim=1)
+                                          for _ in range(self.gat_layers)])
+        self.gat_t = nn.ModuleList([GATConv(in_channels=hidden_dim, out_channels=hidden_dim, heads=8, concat=False, edge_dim=1)
+                                          for _ in range(self.gat_layers)])
 
         self.wq = nn.Linear(hidden_dim, hidden_dim)
         self.wk = nn.Linear(hidden_dim, hidden_dim)
@@ -43,13 +40,13 @@ class UARE(nn.Module):
         s_region_emb = self.s_region_emb.weight
         t_region_emb = self.t_region_emb.weight
 
-        for i in range(self.gnn_layers - 1):
-            s_region_emb = self.gnn_convs_s[i](s_region_emb, self.s_edge_index, self.s_edge_weight)
+        for i in range(self.gat_layers - 1):
+            s_region_emb = self.gat_s[i](s_region_emb, self.s_edge_index, self.s_edge_weight)
             s_region_emb = self.activation(s_region_emb)
-            t_region_emb = self.gnn_convs_t[i](t_region_emb, self.t_edge_index, self.t_edge_weight)
+            t_region_emb = self.gat_t[i](t_region_emb, self.t_edge_index, self.t_edge_weight)
             t_region_emb = self.activation(t_region_emb)
-        s_region_emb = self.gnn_convs_s[self.gnn_layers - 1](s_region_emb, self.s_edge_index, self.s_edge_weight)
-        t_region_emb = self.gnn_convs_t[self.gnn_layers - 1](t_region_emb, self.t_edge_index, self.t_edge_weight)
+        s_region_emb = self.gat_s[self.gat_layers - 1](s_region_emb, self.s_edge_index, self.s_edge_weight)
+        t_region_emb = self.gat_t[self.gat_layers - 1](t_region_emb, self.t_edge_index, self.t_edge_weight)
 
         return s_region_emb, t_region_emb
 
@@ -112,10 +109,5 @@ class UARE(nn.Module):
         ps_hat = torch.masked_select(ps_hat, mask)
         mob_s = torch.masked_select(mob, mask)
 
-        inner_prod_d = torch.matmul(d_embeds, s_embeds.transpose(-2, -1))
-        pd_hat = F.log_softmax(inner_prod_d, dim=-1)
-        pd_hat = torch.masked_select(pd_hat, mask.T)
-        mob_d = torch.masked_select(mob.T, mask.T)
-
-        loss = torch.sum(-torch.mul(mob_s, ps_hat) - torch.mul(mob_d, pd_hat))
+        loss = torch.sum(-torch.mul(mob_s, ps_hat))
         return loss
