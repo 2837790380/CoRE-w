@@ -70,5 +70,5 @@ if __name__ == '__main__':
             np.save(save_path + '/{}_region_emb_{}.npy'.format(
                 t_dataset, best_epoch), t_emb)
 
-    evaluator.evaluate(s_dataset=s_dataset, t_dataset=t_dataset, s_region_emb=s_emb,
-                       t_region_emb=t_emb)
+            evaluator.evaluate(s_dataset=s_dataset, t_dataset=t_dataset, s_region_emb=s_emb,
+                               t_region_emb=t_emb)
