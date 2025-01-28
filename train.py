@@ -1,6 +1,6 @@
 import numpy as np
 import tqdm
-from Model.UARE import *
+from Model.CoRE import *
 from evaluator.evaluator_cross_city import Evaluator
 from torch.utils.data import DataLoader
 import pickle
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     s_region_num, s_graph_info = load_data(s_dataset)
     t_region_num, t_graph_info = load_data(t_dataset)
 
-    model = UARE(s_region_num=s_region_num, t_region_num=t_region_num, s_graph_info=s_graph_info,
+    model = CoRE(s_region_num=s_region_num, t_region_num=t_region_num, s_graph_info=s_graph_info,
                  t_graph_info=t_graph_info, hidden_dim=d_feature, gat_layers=2, num_heads=8)
 
     evaluator = Evaluator(exp_id=exp_id)
