@@ -1,15 +1,15 @@
-# Unsupervised Alignment of Urban Region Representations for Cross-City Socioeconomic Indicator Prediction
+# Consistent Region Embedding across Cities via Latent Space Alignment
 
-These are the source codes for the **UARE** model and its corresponding data. 
+These are the source codes for the **CoRE** model and its corresponding data. 
 
 - Data
   
   raw_data/ — Data of three cities, Chengdu (CD), Beijing (BJ), and Xi'an (XA).  The data of each city contains region data, mobility data, and the socioeconomic indicator data.
   
 - Code
-  1. train.py — A file to run the UARE model. Note that there are some hyperparameters that can be set in this file.
+  1. train.py — A file to run the **CoRE** model. Note that there are some hyperparameters that can be set in this file.
   2. evaluator/ — The files in this folder contain the details of cross-city region-level socioeconomic prediction tasks.
-  3. model/ — These are the codes for **UARE**, including the implementation details of all components of the model.
+  3. model/ — These are the codes for **CoRE**, including the implementation details of all components of the model.
   
 - Region Embeddings
 
