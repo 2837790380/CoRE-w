@@ -8,7 +8,7 @@ import random
 import sys
 
 
-class UARE(nn.Module):
+class CoRE(nn.Module):
     def __init__(self, s_region_num, t_region_num, s_graph_info, t_graph_info,
                  hidden_dim, gat_layers=2, num_heads=8):
         super().__init__()
