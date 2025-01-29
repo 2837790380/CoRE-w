@@ -14,4 +14,3 @@ These are the source codes for the **CoRE** model and its corresponding data.
 - Region Embeddings
 
   save_emb/ — These are the aligned embeddings of urban regions.  Running the eval.py can evaluate the alignment performance using the embeddings of different cities.
-
